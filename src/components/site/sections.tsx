@@ -12,8 +12,10 @@ import {
   FileDown,
   FileText,
   Mic,
+  Percent,
   Phone,
   Quote,
+  Receipt,
   Users,
   Workflow,
   type LucideIcon,
@@ -22,7 +24,8 @@ import {
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HeroArt } from "@/components/site/hero-art";
 import { BENEFITS, FAQS, FEATURES, PLANS, STEPS, TESTIMONIALS, voiceAgentPhone } from "@/lib/site-content";
-import { formatMoney } from "@/lib/format";
+import { InvoiceDocument, type InvoiceDoc } from "@/components/invoice-document";
+import { computeInvoiceTotals, formatMoney } from "@/lib/format";
 import { useSignedIn } from "@/lib/use-session";
 
 const ICONS: Record<(typeof FEATURES)[number]["id"], LucideIcon> = {
@@ -266,6 +269,117 @@ export function DashboardPreviewSection() {
         >
           Explore Dashboard <ArrowRight className="h-4 w-4" />
         </Link>
+      </div>
+    </section>
+  );
+}
+
+const SAMPLE_ITEMS = [
+  { description: "Website design (5 pages)", quantity: 1, unit_price: 30000 },
+  { description: "Logo and brand kit", quantity: 1, unit_price: 12000 },
+  { description: "Support hours", quantity: 6, unit_price: 1500 },
+];
+const SAMPLE_TOTALS = computeInvoiceTotals({
+  items: SAMPLE_ITEMS.map((i) => ({ ...i, tax_rate: 0 })),
+  discount_type: "percentage",
+  discount_value: 10,
+  tax_rate: 18,
+});
+const SAMPLE_INVOICE: InvoiceDoc = {
+  business: {
+    name: "Your Business Name",
+    address: "12 MG Road, Bengaluru 560001",
+    email: "billing@yourbusiness.example",
+    phone: "+91 98765 43210",
+    tax_id: "27ABCDE1234F1Z5",
+    payment_instructions: "Bank transfer: HDFC Bank, A/C 0000 1234 5678, IFSC HDFC0001234\nUPI: yourbusiness@upi",
+  },
+  customer: {
+    name: "Priya Sharma",
+    company: "Acme Studios",
+    email: "accounts@acme-studios.example",
+    phone: "+91 91234 56780",
+    billing_address: "45 Linking Road, Mumbai 400050",
+  },
+  number: "INV-0042",
+  status: "partially_paid",
+  issue_date: "2026-10-01",
+  due_date: "2026-10-15",
+  currency: "INR",
+  items: SAMPLE_ITEMS,
+  subtotal: SAMPLE_TOTALS.subtotal,
+  discount: SAMPLE_TOTALS.discount,
+  tax: SAMPLE_TOTALS.tax,
+  tax_rate: 18,
+  total: SAMPLE_TOTALS.total,
+  paid_amount: 30000,
+  notes: "Thank you for your business. Please quote the invoice number when paying.",
+};
+
+const INVOICE_DETAILS = [
+  { icon: Receipt, title: "Automatic invoice numbers", body: "Every invoice gets the next number in your own format, like INV-0042, so nothing is duplicated." },
+  { icon: Users, title: "Customer details", body: "Name, business, email, phone and billing address, filled in from your customer list." },
+  { icon: Percent, title: "GST and discounts", body: "Set your GST rate and a percentage or fixed discount. The subtotal, tax and grand total update as you type." },
+  { icon: CreditCard, title: "Payment instructions", body: "Bank details or a UPI ID printed on every invoice, so customers know exactly how to pay." },
+  { icon: Coins, title: "Payments and balance", body: "Record full or part payments. The invoice shows what has been paid and what is still due." },
+  { icon: BellRing, title: "Reminders attached", body: "Each unpaid invoice is followed up automatically, and reminders stop once it is paid." },
+  { icon: FileDown, title: "PDF and print", body: "Download a clean PDF with your logo and GST number, or print it straight from the browser." },
+] as const;
+
+const STATUS_FLOW = [
+  { label: "Draft", cls: "bg-slate-100 text-slate-700" },
+  { label: "Sent", cls: "bg-sky-100 text-sky-700" },
+  { label: "Partially paid", cls: "bg-amber-100 text-amber-700" },
+  { label: "Paid", cls: "bg-emerald-100 text-emerald-700" },
+  { label: "Overdue", cls: "bg-red-100 text-red-700" },
+];
+
+export function InvoiceDetailSection() {
+  return (
+    <section id="invoice-details" className="bg-emerald-50/50 py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <SectionHeading
+          eyebrow="Invoice details"
+          title="Every invoice has everything in it"
+          sub="A real invoice from the app, shown with sample details. Yours carries your own business name, logo and GST number."
+        />
+        <div className="mt-12 grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]">
+          <div>
+            <div className="overflow-hidden rounded-2xl border bg-white shadow-xl">
+              <InvoiceDocument doc={SAMPLE_INVOICE} />
+            </div>
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Sample invoice with 10% discount and 18% GST, partly paid.
+            </p>
+          </div>
+          <div>
+            <ul className="space-y-5">
+              {INVOICE_DETAILS.map(({ icon: Icon, title, body }) => (
+                <li key={title} className="flex gap-4">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-primary shadow-sm">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span>
+                    <span className="block font-semibold">{title}</span>
+                    <span className="mt-0.5 block text-sm text-muted-foreground">{body}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 rounded-2xl border bg-white p-5">
+              <div className="text-sm font-semibold">Status tracking</div>
+              <p className="mt-1 text-xs text-muted-foreground">Overdue is worked out automatically from the due date.</p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {STATUS_FLOW.map((s, i) => (
+                  <span key={s.label} className="flex items-center gap-2">
+                    <span className={`rounded-full px-3 py-1 text-xs font-medium ${s.cls}`}>{s.label}</span>
+                    {i < STATUS_FLOW.length - 2 && <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

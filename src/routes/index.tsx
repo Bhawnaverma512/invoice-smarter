@@ -8,6 +8,7 @@ import {
   FeaturesSection,
   Hero,
   HowItWorksSection,
+  InvoiceDetailSection,
   PricingSection,
   TestimonialsSection,
 } from "@/components/site/sections";
@@ -35,6 +36,7 @@ function Home() {
       <Hero />
       <FeaturesSection />
       <HowItWorksSection />
+      <InvoiceDetailSection />
       <DashboardPreviewSection />
       <BenefitsSection />
       <PricingSection />
