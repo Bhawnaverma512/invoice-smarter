@@ -447,7 +447,7 @@ export function PricingSection() {
 
 export function TestimonialsSection() {
   return (
-    <section className="bg-emerald-50/50 py-20">
+    <section id="testimonials" className="bg-emerald-50/50 py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading eyebrow="Testimonials" title="What businesses say" />
         <div className="mt-10 grid gap-5 md:grid-cols-3">

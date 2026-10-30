@@ -1,7 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { FileText, Menu, Phone, X } from "lucide-react";
+import { ChevronDown, FileText, Menu, Phone, X } from "lucide-react";
 
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { BRAND, BRAND_BLURB, FOOTER_LINKS, SOCIAL_LINKS, voiceAgentPhone } from "@/lib/site-content";
 import { useSignedIn } from "@/lib/use-session";
 
@@ -12,6 +13,14 @@ const NAV: { label: string; to: "/" | "/about" | "/contact"; hash?: string }[] =
   { label: "Pricing", to: "/", hash: "pricing" },
   { label: "About Us", to: "/about" },
   { label: "Contact", to: "/contact" },
+];
+
+/** Extra sections of the home page, shown under the "More" menu. */
+const MORE: { label: string; hash: string }[] = [
+  { label: "Invoice Details", hash: "invoice-details" },
+  { label: "Dashboard Preview", hash: "dashboard-preview" },
+  { label: "Testimonials", hash: "testimonials" },
+  { label: "FAQ", hash: "faq" },
 ];
 
 export function Logo({ className = "" }: { className?: string }) {
@@ -28,6 +37,48 @@ export function Logo({ className = "" }: { className?: string }) {
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { signedIn } = useSignedIn();
+  const phone = voiceAgentPhone();
+  const linkClass = "whitespace-nowrap text-sm font-medium text-muted-foreground transition-colors hover:text-primary";
+
+  // Everything in the "More" menu, as plain links for the phone menu.
+  const moreLinks = (
+    <>
+      {MORE.map((m) => (
+        <Link key={m.label} to="/" hash={m.hash} onClick={() => setOpen(false)} className={linkClass}>
+          {m.label}
+        </Link>
+      ))}
+      {phone && (
+        <a href={phone.href} className={linkClass}>
+          Call voice agent: {phone.label}
+        </a>
+      )}
+    </>
+  );
+
+  const moreMenu = (
+    <DropdownMenu>
+      <DropdownMenuTrigger className={`${linkClass} flex items-center gap-1 outline-none focus-visible:text-primary`}>
+        More <ChevronDown className="h-3.5 w-3.5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        {MORE.map((m) => (
+          <DropdownMenuItem key={m.label} asChild>
+            <Link to="/" hash={m.hash} className="cursor-pointer">
+              {m.label}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+        {phone && (
+          <DropdownMenuItem asChild>
+            <a href={phone.href} className="cursor-pointer font-medium text-primary">
+              <Phone className="mr-2 h-4 w-4" /> {phone.label}
+            </a>
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 
   const links = NAV.map((n) => (
     <Link
@@ -66,8 +117,9 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo />
-        <nav className="hidden items-center gap-7 xl:flex" aria-label="Main">
+        <nav className="hidden items-center gap-6 xl:flex" aria-label="Main">
           {links}
+          {moreMenu}
         </nav>
         <div className="hidden items-center gap-2 xl:flex">{actions}</div>
         <button
@@ -83,6 +135,8 @@ export function SiteHeader() {
         <div className="border-t bg-white px-4 py-4 xl:hidden">
           <nav className="flex flex-col gap-4" aria-label="Mobile">
             {links}
+            <div className="border-t pt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">More</div>
+            {moreLinks}
           </nav>
           <div className="mt-4 flex flex-wrap gap-2">{actions}</div>
         </div>
