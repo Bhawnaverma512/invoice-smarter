@@ -96,3 +96,16 @@ export const SOCIAL_LINKS: { label: string; href: string }[] = [
 
 /** Where the Contact page sends messages. Change to your real inbox. */
 export const CONTACT_EMAIL = "support@smartinvoice.example";
+
+/**
+ * Phone number of your Vapi voice agent, with the country code, for example "+1 415 555 0123".
+ * Shown exactly as written. Leave it empty to hide the call buttons.
+ */
+export const VOICE_AGENT_PHONE = "+1 (302) 754 2049";
+
+/** The tap-to-call link for the voice agent number, or null while no valid number is set. */
+export function voiceAgentPhone() {
+  const digits = VOICE_AGENT_PHONE.replace(/[^\d+]/g, "");
+  if (!/^\+\d{8,15}$/.test(digits)) return null;
+  return { href: `tel:${digits}`, label: VOICE_AGENT_PHONE.trim() };
+}

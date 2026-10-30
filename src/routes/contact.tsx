@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 import { SitePage } from "@/components/site/site-chrome";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CONTACT_EMAIL } from "@/lib/site-content";
+import { CONTACT_EMAIL, voiceAgentPhone } from "@/lib/site-content";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({ meta: [{ title: "Contact | Smart Invoice & Follow-Up" }] }),
@@ -16,6 +16,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
+  const phone = voiceAgentPhone();
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   function submit(e: React.FormEvent) {
@@ -35,6 +36,17 @@ function Contact() {
       <section className="mx-auto max-w-2xl px-4 py-20 sm:px-6">
         <h1 className="text-4xl font-bold tracking-tight">Contact us</h1>
         <p className="mt-3 text-muted-foreground">Questions, feedback or need help? Send us a message.</p>
+        {phone && (
+          <a href={phone.href} className="mt-6 flex items-center gap-4 rounded-2xl border bg-emerald-50/60 p-5 hover:bg-emerald-50">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Phone className="h-6 w-6" />
+            </span>
+            <span>
+              <span className="block text-sm text-muted-foreground">Call our voice agent, any time</span>
+              <span className="block text-xl font-bold tracking-tight">{phone.label}</span>
+            </span>
+          </a>
+        )}
         <form onSubmit={submit} className="mt-8 space-y-4 rounded-2xl border bg-white p-6 shadow-sm">
           <div className="space-y-1.5">
             <Label htmlFor="ct-name">Your name</Label>

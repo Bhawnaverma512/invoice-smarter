@@ -1,8 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { FileText, Menu, X } from "lucide-react";
+import { FileText, Menu, Phone, X } from "lucide-react";
 
-import { BRAND, BRAND_BLURB, FOOTER_LINKS, SOCIAL_LINKS } from "@/lib/site-content";
+import { BRAND, BRAND_BLURB, FOOTER_LINKS, SOCIAL_LINKS, voiceAgentPhone } from "@/lib/site-content";
 import { useSignedIn } from "@/lib/use-session";
 
 const NAV: { label: string; to: "/" | "/about" | "/contact"; hash?: string }[] = [
@@ -93,6 +93,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const socials = SOCIAL_LINKS.filter((s) => s.href);
+  const phone = voiceAgentPhone();
   const col = (title: string, items: readonly { label: string; to: string }[]) => (
     <div>
       <h3 className="text-sm font-semibold">{title}</h3>
@@ -113,6 +114,11 @@ export function SiteFooter() {
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">{BRAND_BLURB}</p>
+          {phone && (
+            <a href={phone.href} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+              <Phone className="h-4 w-4" /> Voice agent: {phone.label}
+            </a>
+          )}
           {socials.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-3 text-sm">
               {socials.map((s) => (

@@ -12,6 +12,7 @@ import {
   FileDown,
   FileText,
   Mic,
+  Phone,
   Quote,
   Users,
   Workflow,
@@ -20,7 +21,7 @@ import {
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HeroArt } from "@/components/site/hero-art";
-import { BENEFITS, FAQS, FEATURES, PLANS, STEPS, TESTIMONIALS } from "@/lib/site-content";
+import { BENEFITS, FAQS, FEATURES, PLANS, STEPS, TESTIMONIALS, voiceAgentPhone } from "@/lib/site-content";
 import { formatMoney } from "@/lib/format";
 import { useSignedIn } from "@/lib/use-session";
 
@@ -47,6 +48,7 @@ export function SectionHeading({ eyebrow, title, sub }: { eyebrow?: string; titl
 
 export function Hero() {
   const { signedIn } = useSignedIn();
+  const phone = voiceAgentPhone();
   return (
     <section id="home" className="relative overflow-hidden bg-gradient-to-b from-emerald-50/70 to-white">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-2 lg:pb-24 lg:pt-20">
@@ -72,6 +74,20 @@ export function Hero() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">Free plan available. No payment details needed to start.</p>
+          {phone && (
+            <a
+              href={phone.href}
+              className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-emerald-200 bg-white px-4 py-3 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Phone className="h-5 w-5" />
+              </span>
+              <span className="text-left">
+                <span className="block text-xs font-medium text-muted-foreground">Talk to our voice agent</span>
+                <span className="block text-base font-bold tracking-tight">{phone.label}</span>
+              </span>
+            </a>
+          )}
         </div>
         <div className="mx-auto w-full max-w-xl lg:max-w-none">
           <HeroArt />
